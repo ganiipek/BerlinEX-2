@@ -128,3 +128,69 @@ int countDecimal(double val)
   while(NormalizeDouble(val,digits)!=NormalizeDouble(val,8)) digits++;
   return digits;
 }
+
+bool LabelCreate(const long              chart_ID=0,               // chart's ID
+                 const string            name="Label",             // label name
+                 const int               x=0,                      // X coordinate
+                 const int               y=0,                      // Y coordinate
+                 const string            text="Label",             // text
+                 const int               font_size=12,
+                 const color             clr=clrRed,               // color
+                 ENUM_ANCHOR_POINT       ANCHOR=ANCHOR_LEFT,
+                 const string            font = "Arial",
+                 const bool              back=false,               // in the background
+                 const bool              selection=false,          // highlight to move
+                 const bool              hidden=true,              // hidden in the object list
+                 const long              z_order=10)                // priority for mouse click
+  {
+//--- reset the error value
+   ResetLastError();
+//--- create a text label
+   if(!ObjectCreate(chart_ID,name,OBJ_LABEL,0,0,0))
+     {
+      Print(__FUNCTION__,
+            ": failed to create text label! Error code = ",GetLastError());
+      return(false);
+     }
+//--- set label coordinates
+   ObjectSetInteger(chart_ID,name,OBJPROP_XDISTANCE,x);
+   ObjectSetInteger(chart_ID,name,OBJPROP_YDISTANCE,y);
+//--- set the chart's corner, relative to which point coordinates are defined
+   ObjectSetInteger(chart_ID,name,OBJPROP_CORNER, CORNER_LEFT_LOWER);
+   ObjectSetInteger(chart_ID,name,OBJPROP_ANCHOR, ANCHOR);
+//--- set the text
+   ObjectSetString(chart_ID,name,OBJPROP_TEXT,text);
+//--- set text font
+   ObjectSetString(chart_ID,name,OBJPROP_FONT,font);
+//--- set font size
+   ObjectSetInteger(chart_ID,name,OBJPROP_FONTSIZE,font_size);
+//--- set the type of text alignment in the object
+   ObjectSetInteger(chart_ID,name,OBJPROP_ALIGN, ALIGN_CENTER);
+//--- set color
+   ObjectSetInteger(chart_ID,name,OBJPROP_COLOR,clr);
+//--- display in the foreground (false) or background (true)
+   ObjectSetInteger(chart_ID,name,OBJPROP_BACK,back);
+//--- enable (true) or disable (false) the mode of moving the label by mouse
+   ObjectSetInteger(chart_ID,name,OBJPROP_SELECTABLE,selection);
+   ObjectSetInteger(chart_ID,name,OBJPROP_SELECTED,selection);
+//--- hide (true) or display (false) graphical object name in the object list
+   ObjectSetInteger(chart_ID,name,OBJPROP_HIDDEN,hidden);
+//--- set the priority for receiving the event of a mouse click in the chart
+   ObjectSetInteger(chart_ID,name,OBJPROP_ZORDER,z_order);
+//--- successful execution
+   return(true);
+  }
+  
+  
+ bool LabelTextChange(const long    chart_ID=0,   // chart's ID
+                     const string   name="Label", // object name
+                     const string   text="Text",
+                     const color    clr=C'248, 248, 248'               // color
+                     
+                     )  // text
+  {
+   ObjectSetString(chart_ID,name,OBJPROP_TEXT,text);
+   ObjectSetInteger(chart_ID,name,OBJPROP_COLOR,clr);
+   ChartRedraw();
+   return(true);
+  }
