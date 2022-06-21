@@ -201,11 +201,35 @@ class PositionManager
 
       void closeAllHedge(int step)
       {
+         int hedge_out_count        = 0;
+         int last_hedge_out_ticket  = 0;
+
          for(int i=0; i<ArraySize(position_list); i++) 
          {
             if(position_list[i].step <= step && position_list[i].breakout_type != POSITION_BREAKOUT_TYPE_HEDGE_OUT) 
             {
                close(position_list[i].ticket);
+            }
+            else
+            {
+               hedge_out_count++;
+
+               if(position_list[i].ticket > last_hedge_out_ticket)
+               {
+                  last_hedge_out_ticket = position_list[i].ticket;
+               }
+            }
+         }
+
+         
+         if(hedge_out_count > 1)
+         {
+            for(int i=0; i<ArraySize(position_list); i++) 
+            {
+               if(position_list[i].step <= step && position_list[i].breakout_type == POSITION_BREAKOUT_TYPE_HEDGE_OUT && position_list[i].ticket != last_hedge_out_ticket) 
+               {
+                  close(position_list[i].ticket);
+               }
             }
          }
       }
