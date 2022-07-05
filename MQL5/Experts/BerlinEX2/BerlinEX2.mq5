@@ -13,7 +13,13 @@
 #include <BerlinEX2/Dictionary.mqh>
 
 CDictionary *dict_step = new CDictionary();
-double step_list[];
+int step_list[];
+
+CDictionary *dict_hedge_step = new CDictionary();
+int step_hedge_list[];
+
+CDictionary *dict_stop_step = new CDictionary();
+int step_stop_list[];
 // #resource "\\Indicators\\BerlinEX2\\BerlinEX2.ex5"
 
 enum ENUM_PROGRAM_BREAKOUT_TYPE
@@ -204,7 +210,7 @@ class BreakoutManager
          {
             if(positionManager.getPositionCount() == 0)
             {
-               saveStep(current_step);
+               saveStep(dict_step, step_list, current_step);
                if(last_step_was_more_than_one && current_step > 1)
                {
                   count_more_than_one_step += 1;
@@ -739,12 +745,12 @@ void calculateNonTradeDays()
 }
 
 
-void saveStep(int step)
+void saveStep(CDictionary &dictionary, int &list[], int step)
 {
     bool isExist = false;
-    for(int i=0; i<ArraySize(step_list); i++)
+   for(int i=0; i<ArraySize(list); i++)
     {
-        if(step_list[i] == step)
+      if(list[i] == step)
         {
         isExist = true;
         break;
@@ -753,19 +759,19 @@ void saveStep(int step)
 
     if(!isExist)
     {
-        int size = ArraySize(step_list);
-        ArrayResize(step_list, size + 1);
-        step_list[size] = step;
+      int size = ArraySize(list);
+      ArrayResize(list, size + 1);
+      list[size] = step;
     }
 
-    if(dict_step.Get<int>(IntegerToString(step)) == NULL)
+   if(dictionary.Get<int>(IntegerToString(step)) == NULL)
     {
-        dict_step.Set<int>(IntegerToString(step), 1);
+      dictionary.Set<int>(IntegerToString(step), 1);
     }
     else
     {
-        int count = dict_step.Get<int>(IntegerToString(step));
-        dict_step.Set<int>(IntegerToString(step), count + 1);
+      int count = dictionary.Get<int>(IntegerToString(step));
+      dictionary.Set<int>(IntegerToString(step), count + 1);
     }
 }
 
@@ -798,4 +804,28 @@ void printSteps()
         IntegerToString(count_more_than_one_step),
         DoubleToString((double)count_more_than_one_step / (double)total_step * 100, 2)
         );
+   Print("<---------------------------------------------------->");
+   Print("Hedging Step:");
+
+   int total_hedge_count = 0;
+   for(int i=0; i<ArraySize(step_hedge_list); i++)
+   {
+      string  diff    = IntegerToString(step_hedge_list[i]);
+      int     count   = dict_hedge_step.Get<int>(diff);
+      total_hedge_count += count;
+   }
+
+   for(int i=0; i<ArraySize(step_hedge_list); i++)
+   {
+      string  diff    = IntegerToString(step_hedge_list[i]);
+      int     count   = dict_hedge_step.Get<int>(diff);
+      PrintFormat("Step: %s ---> %s (%%%s)",
+         IntegerToString(step_hedge_list[i]),
+         IntegerToString(count),
+         DoubleToString((double)count / (double)total_hedge_count * 100, 2)
+      );
+   }
+
+   Print("Total Hedge In: " + IntegerToString(total_hedge_count));
+   
 }
