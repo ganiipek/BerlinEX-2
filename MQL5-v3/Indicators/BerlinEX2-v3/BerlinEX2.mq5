@@ -18,7 +18,7 @@
 #property indicator_style1  STYLE_DOT
 #property indicator_width1  3
 
-#resource "\\Indicators\\BerlinEX2\\HeikanAshi EMA.ex5"
+#resource "\\Indicators\\BerlinEX2-v3\\HeikanAshi EMA.ex5"
 
 input ENUM_TIMEFRAMES         input_heiken_ashi_slow_ema_time_frame           = PERIOD_M1;         // Heikin Ashi Slow EMA Time Frame
 input int                     input_heiken_ashi_slow_ema_time_frame_shift     = 0;                 // Heikin Ashi Slow EMA Time Frame Shift
@@ -56,7 +56,7 @@ int OnInit()
    
    ArraySetAsSeries(reverse_time, true);
    
-   indicator_handle_slow_ema = iCustom(_Symbol, input_heiken_ashi_slow_ema_time_frame, "\\Indicators\\BerlinEX2\\HeikanAshi EMA.ex5", input_heiken_ashi_slow_ema_time_frame_shift, input_heiken_ashi_slow_ema_period);
+   indicator_handle_slow_ema = iCustom(_Symbol, input_heiken_ashi_slow_ema_time_frame, "\\Indicators\\BerlinEX2-v3\\HeikanAshi EMA.ex5", input_heiken_ashi_slow_ema_time_frame_shift, input_heiken_ashi_slow_ema_period);
    if(indicator_handle_slow_ema == INVALID_HANDLE)
    {
       PrintFormat("Failed to create handle of the Heikan Ashi Slow EMA indicator for the symbol %s/%s, error code %d",
@@ -67,7 +67,7 @@ int OnInit()
       return INIT_FAILED;
    }
    
-   indicator_handle_fast_ema = iCustom(_Symbol, input_heiken_ashi_fast_ema_time_frame, "\\Indicators\\BerlinEX2\\HeikanAshi EMA.ex5", input_heiken_ashi_fast_ema_time_frame_shift, input_heiken_ashi_fast_ema_period);
+   indicator_handle_fast_ema = iCustom(_Symbol, input_heiken_ashi_fast_ema_time_frame, "\\Indicators\\BerlinEX2-v3\\HeikanAshi EMA.ex5", input_heiken_ashi_fast_ema_time_frame_shift, input_heiken_ashi_fast_ema_period);
    if(indicator_handle_fast_ema == INVALID_HANDLE)
    {
       PrintFormat("Failed to create handle of the Heikan Ashi Fast EMA indicator for the symbol %s/%s, error code %d",
@@ -146,19 +146,5 @@ bool FillBuffer(datetime &time[], int amount)
       if(fast_ema[0] > slow_ema[0]) indicator_buffer_color[i] = 0;
    }
    
-/*
-   for(int i = ArraySize(values) - 1; i >= 0; i--)
-   {
-      int buffer_index = (ArraySize(trade_buffer) - 1) - (ArraySize(values) - 1 - i);
-      
-      if(i - 1 >= 0)
-      {
-         trade_buffer[buffer_index] = 2;
-         color_buffer[buffer_index] = 1;
-      
-         if(values[i-1] > 0) color_buffer[buffer_index] = 0;
-      }
-   }
-   */
    return(true);
 }
